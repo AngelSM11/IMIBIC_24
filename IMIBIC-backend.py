@@ -17,7 +17,7 @@ class Backend(QMainWindow):
         self.setFixedSize(self.size())
         
         self.graphicsView = QWebEngineView()
-        self.gridLayout.addWidget(self.graphicsView, 0, 0, 1, 1)
+        self.gridLayout_6.addWidget(self.graphicsView, 0, 0, 1, 1)
         self.comboBox.currentIndexChanged.connect(self.update_graph)
 
         self.plotly_figure = make_subplots(rows=1, cols=1)
