@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1196</width>
-    <height>875</height>
+    <width>1700</width>
+    <height>900</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -93,30 +93,30 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
-        <widget class="QPushButton" name="Data1">
+        <widget class="QPushButton" name="Button1">
          <property name="text">
-          <string>Dato1</string>
+          <string>Visualización 1</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="Data2">
+        <widget class="QPushButton" name="Button2">
          <property name="text">
-          <string>Dato2</string>
+          <string>Visualización 2</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="Data3">
+        <widget class="QPushButton" name="Button3">
          <property name="text">
-          <string>Dato3</string>
+          <string>Visualización 3</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="Data4">
+        <widget class="QPushButton" name="Button4">
          <property name="text">
-          <string>Dato4</string>
+          <string>Visualización 4</string>
          </property>
         </widget>
        </item>
