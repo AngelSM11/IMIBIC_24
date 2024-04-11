@@ -6,59 +6,8 @@ from PyQt6.QtWebEngineWidgets import QWebEngineView
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 
-class Usuario:
-    def __init__(self, dni, name, surname, age, danger, type, *args):
-        self.dni = dni
-        self.name = name
-        self.surname = surname
-        self.age = age
-        self.danger = danger
-        self.type = type
-        self.passwd = args[0]
 
-def load_users():
-    users = []
-    with open('db.txt', 'r') as file:
-        for line in file:
-            data = line.strip().split(', ')
-            user = Usuario(*data)
-            users.append(user)
-    return users
-
-def verify_Creds(dni):
-        users = load_users()
-
-        for user in users:
-            if user.dni == dni:
-                if user.passwd == "admin":
-                    return True
-                else:
-                    return False
-
-        return False
-
-class VentanaInicioSesion(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.ui = loadUi("inicio_sesion.ui", self)
-        self.ui.init_button.clicked.connect(self.iniciar_sesion)
-
-    def iniciar_sesion(self):
-        dni = self.ui.input_dni.text()
-        if verify_Creds(dni):
-            self.mostrar_interfaz('interfaz_admin.ui')
-        elif verify_Creds(dni) == False:
-            self.mostrar_interfaz('interfaz_user.ui')
-        else:
-            QMessageBox.warning(self, 'Error', 'Credenciales incorrectas')
-
-
-    def mostrar_interfaz(self, nombre_archivo_ui):
-        self.ui_interfaz = loadUi(nombre_archivo_ui)
-        self.ui_interfaz.show()
-
-
-class Backend():
+class Backend(QMainWindow):
     def __init__(self):
         super().__init__()
         loadUi("IMIBIC-frontend.ui", self)
@@ -256,7 +205,7 @@ class Backend():
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     
-    inicio_sesion = VentanaInicioSesion()
+    inicio_sesion = Backend()
     inicio_sesion.show()
     
     sys.exit(app.exec())
