@@ -18,12 +18,19 @@ class Backend(QMainWindow):
         
         self.graphicsView = QWebEngineView()
         self.gridLayout_6.addWidget(self.graphicsView, 0, 0, 1, 1)
-        self.comboBox.currentIndexChanged.connect(self.update_graph)
+        self.comboBox.currentIndexChanged.connect(self.update_graph_data1)
+        self.comboBox.currentIndexChanged.connect(self.update_text_browser)
+        
 
         self.plotly_figure = make_subplots(rows=1, cols=1)
-        self.update_graph()
+        self.update_graph_data1()
 
         self.apply_Palette()
+        
+        self.Button1.clicked.connect(self.update_graph_data1)
+        self.Button2.clicked.connect(self.update_graph_data2)
+        self.Button3.clicked.connect(self.update_graph_data3)
+        self.Button4.clicked.connect(self.update_graph_data4)
 
     def apply_Palette(self):
         palette = QPalette()
@@ -57,16 +64,70 @@ class Backend(QMainWindow):
                 self.comboBox.clear()
                 for patient in self.patients:
                     self.comboBox.addItem(patient[0])
+            
         except FileNotFoundError:
             print("There are no patients in the database. Please add some with the 'Add Patient' option.")
+
     
-    def update_graph(self):
+    def update_text_browser(self):
+        selected_patient_index = self.comboBox.currentIndex()
+        if selected_patient_index != -1:
+            patient_data = self.patients[selected_patient_index]
+            self.textBrowser.clear()
+            self.textBrowser.append(f"<b>Nombre:</b> {patient_data[1]}")
+            self.textBrowser.append(f"<b>Apellidos:</b> {patient_data[2]}")
+            self.textBrowser.append(f"<b>Edad:</b> {patient_data[3]}")
+            self.textBrowser.append(f"<b>Nivel de peligro:</b> {patient_data[4]}")
+
+    def update_graph_data1(self):
         selected_patient_index = self.comboBox.currentIndex()
         if selected_patient_index != -1:
             patient_data = self.patients[selected_patient_index][-8:]
             x_values = [i for i in range(1, 9)]
             self.plotly_figure = go.Figure()
             self.plotly_figure.add_trace(go.Scatter(x=x_values, y=patient_data, mode='lines+markers', name='Impedancy Graph'))
+            html = self.plotly_figure.to_html(full_html=False, include_plotlyjs='cdn')
+            self.graphicsView.setHtml(html)
+            size_policy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+            size_policy.setHorizontalStretch(1)
+            size_policy.setVerticalStretch(1)
+            self.graphicsView.setSizePolicy(size_policy)
+
+    def update_graph_data2(self):
+        selected_patient_index = self.comboBox.currentIndex()
+        if selected_patient_index != -1:
+            patient_data = self.patients[selected_patient_index][-8:]
+            x_values = [i for i in range(1, 9)]
+            self.plotly_figure = go.Figure()
+            self.plotly_figure.add_trace(go.Scatter(x=x_values, y=patient_data, mode='markers', name='Scatter Plot'))
+            html = self.plotly_figure.to_html(full_html=False, include_plotlyjs='cdn')
+            self.graphicsView.setHtml(html)
+            size_policy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+            size_policy.setHorizontalStretch(1)
+            size_policy.setVerticalStretch(1)
+            self.graphicsView.setSizePolicy(size_policy)
+
+    def update_graph_data3(self):
+        selected_patient_index = self.comboBox.currentIndex()
+        if selected_patient_index != -1:
+            patient_data = self.patients[selected_patient_index][-8:]
+            x_values = [i for i in range(1, 9)]
+            self.plotly_figure = go.Figure()
+            self.plotly_figure.add_trace(go.Box(y=patient_data, name='Box Plot'))
+            html = self.plotly_figure.to_html(full_html=False, include_plotlyjs='cdn')
+            self.graphicsView.setHtml(html)
+            size_policy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+            size_policy.setHorizontalStretch(1)
+            size_policy.setVerticalStretch(1)
+            self.graphicsView.setSizePolicy(size_policy)
+
+    def update_graph_data4(self):
+        selected_patient_index = self.comboBox.currentIndex()
+        if selected_patient_index != -1:
+            patient_data = self.patients[selected_patient_index][-8:]
+            x_values = [i for i in range(1, 9)]
+            self.plotly_figure = go.Figure()
+            self.plotly_figure.add_trace(go.Bar(x=x_values, y=patient_data, name='Bar Graph'))
             html = self.plotly_figure.to_html(full_html=False, include_plotlyjs='cdn')
             self.graphicsView.setHtml(html)
             size_policy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -144,8 +205,7 @@ class Backend(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     
-    ventana_principal = Backend()
-    
-    ventana_principal.show()
+    inicio_sesion = Backend()
+    inicio_sesion.show()
     
     sys.exit(app.exec())
