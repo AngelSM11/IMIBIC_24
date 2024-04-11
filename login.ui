@@ -150,9 +150,9 @@ background-color: rgb(70, 70, 70);</string>
          <property name="geometry">
           <rect>
            <x>160</x>
-           <y>160</y>
+           <y>180</y>
            <width>91</width>
-           <height>71</height>
+           <height>31</height>
           </rect>
          </property>
          <property name="styleSheet">
