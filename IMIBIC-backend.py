@@ -1,10 +1,17 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QInputDialog, QMessageBox, QSizePolicy
+from PyQt6.QtWidgets import QApplication, QMainWindow, QInputDialog, QMessageBox, QSizePolicy, QLabel, QTableView
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtCore import Qt
 from PyQt6.uic import loadUi
-from PyQt6.QtGui import QColor, QPalette
+from PyQt6.QtGui import QColor, QPalette, QStandardItemModel, QStandardItem
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
+
+#Import correo
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.text import MIMEText
 
 class Usuario:
     def __init__(self, dni, name, surname, age, danger, type, *args):
@@ -37,10 +44,10 @@ def verify_Creds(dni):
 
         return False
 
-class VentanaInicioSesion(QMainWindow):
+class VentanaInicioSesion():
     def __init__(self):
         super().__init__()
-        self.ui = loadUi("inicio_sesion.ui", self)
+        self.ui = loadUi("login.ui", self)
         self.ui.init_button.clicked.connect(self.iniciar_sesion)
 
     def iniciar_sesion(self):
@@ -58,7 +65,7 @@ class VentanaInicioSesion(QMainWindow):
         self.ui_interfaz.show()
 
 
-class Backend():
+class Backend(QMainWindow):
     def __init__(self):
         super().__init__()
         loadUi("IMIBIC-frontend.ui", self)
@@ -69,19 +76,19 @@ class Backend():
         
         self.graphicsView = QWebEngineView()
         self.gridLayout_6.addWidget(self.graphicsView, 0, 0, 1, 1)
-        self.comboBox.currentIndexChanged.connect(self.update_graph_data1)
+        self.comboBox.currentIndexChanged.connect(self.update_data1)
         self.comboBox.currentIndexChanged.connect(self.update_text_browser)
         
 
         self.plotly_figure = make_subplots(rows=1, cols=1)
-        self.update_graph_data1()
+        self.update_data1()
 
         self.apply_Palette()
-        
-        self.Button1.clicked.connect(self.update_graph_data1)
-        self.Button2.clicked.connect(self.update_graph_data2)
-        self.Button3.clicked.connect(self.update_graph_data3)
-        self.Button4.clicked.connect(self.update_graph_data4)
+        self.Button1.clicked.connect(self.update_data1)
+        self.Button2.clicked.connect(self.update_data2)
+        self.Button3.clicked.connect(self.update_data3)
+        self.Button4.clicked.connect(self.update_data4)
+        self.correo.clicked.connect(self.send_email)
 
     def apply_Palette(self):
         palette = QPalette()
@@ -130,7 +137,7 @@ class Backend():
             self.textBrowser.append(f"<b>Edad:</b> {patient_data[3]}")
             self.textBrowser.append(f"<b>Nivel de peligro:</b> {patient_data[4]}")
 
-    def update_graph_data1(self):
+    def update_data1(self):
         selected_patient_index = self.comboBox.currentIndex()
         if selected_patient_index != -1:
             patient_data = self.patients[selected_patient_index][-8:]
@@ -143,8 +150,10 @@ class Backend():
             size_policy.setHorizontalStretch(1)
             size_policy.setVerticalStretch(1)
             self.graphicsView.setSizePolicy(size_policy)
+            self.add_data_to_model()
+            self.update_warning()
 
-    def update_graph_data2(self):
+    def update_data2(self):
         selected_patient_index = self.comboBox.currentIndex()
         if selected_patient_index != -1:
             patient_data = self.patients[selected_patient_index][-8:]
@@ -157,8 +166,10 @@ class Backend():
             size_policy.setHorizontalStretch(1)
             size_policy.setVerticalStretch(1)
             self.graphicsView.setSizePolicy(size_policy)
+            self.add_data_to_model()
+            self.update_warning()
 
-    def update_graph_data3(self):
+    def update_data3(self):
         selected_patient_index = self.comboBox.currentIndex()
         if selected_patient_index != -1:
             patient_data = self.patients[selected_patient_index][-8:]
@@ -171,8 +182,10 @@ class Backend():
             size_policy.setHorizontalStretch(1)
             size_policy.setVerticalStretch(1)
             self.graphicsView.setSizePolicy(size_policy)
+            self.add_data_to_model()
+            self.update_warning()
 
-    def update_graph_data4(self):
+    def update_data4(self):
         selected_patient_index = self.comboBox.currentIndex()
         if selected_patient_index != -1:
             patient_data = self.patients[selected_patient_index][-8:]
@@ -185,6 +198,8 @@ class Backend():
             size_policy.setHorizontalStretch(1)
             size_policy.setVerticalStretch(1)
             self.graphicsView.setSizePolicy(size_policy)
+            self.add_data_to_model()
+            self.update_warning()
 
     def patients_Conf(self):
         options = ["Añadir", "Eliminar", "Modificar"]
@@ -249,14 +264,77 @@ class Backend():
             self.cargar_patients()
             QMessageBox.information(self, "Éxito", "Paciente modificado correctamente.")
 
+    def update_warning(self):
+        # Carga la imagen desde un archivo
+        selected_patient_index = self.comboBox.currentIndex()
+        if selected_patient_index != -1:
+            patient_data = self.patients[selected_patient_index][-8:]
+
+            for value in patient_data:
+                if float(value) > 4:
+                    # Carga la imagen desde un archivo
+                    pixmap = QPixmap("data/aviso.png")
+                    
+                    # Ajusta la imagen al QLabel
+                    scaled_pixmap = pixmap.scaled(self.estado.size(), aspectRatioMode=Qt.AspectRatioMode.KeepAspectRatio)
+                    self.estado.setPixmap(scaled_pixmap)
+                    self.estado.setScaledContents(True)
+                    break
+                else :
+                    pixmap = QPixmap("data/estable.png")
+                    
+                    # Ajusta la imagen al QLabel
+                    scaled_pixmap = pixmap.scaled(self.estado.size(), aspectRatioMode=Qt.AspectRatioMode.KeepAspectRatio)
+                    self.estado.setPixmap(scaled_pixmap)
+                    self.estado.setScaledContents(True)
+        
+    def add_data_to_model(self):
+         # Crear el modelo de datos
+        self.model = QStandardItemModel()
+
+        # Obtener el índice del paciente seleccionado en el comboBox
+        selected_patient_index = self.comboBox.currentIndex()
+
+        # Obtener los datos del paciente seleccionado
+        patient_data = self.patients[selected_patient_index]
+
+        # Agregar los datos del paciente al modelo
+        row_items = [QStandardItem(str(item)) for item in patient_data]
+        self.model.appendRow(row_items)
+
+        # Establecer el modelo en el QTableView
+        self.tableView.setModel(self.model)
     
 
+    def send_email(self):
+        # Configurar los parámetros del servidor SMTP
+        smtp_server = 'smtp.gmail.com'
+        port = 587
+        sender_email = 'heartkathon@gmail.com'
+        password = 'ikgb jrvp nquf xlzm'
+
+        # Configurar el mensaje
+        receiver_email = 'heartkathon@gmail.com'
+        subject = 'Contacto medico'
+        body = 'Aviso para contactar con el Medico'
+
+        message = MIMEText(body)
+        message['Subject'] = subject
+        message['From'] = sender_email
+        message['To'] = receiver_email
+
+        # Establecer la conexión SMTP y enviar el correo electrónico
+        with smtplib.SMTP(smtp_server, port) as server:
+            server.starttls()
+            server.login(sender_email, password)
+            server.sendmail(sender_email, receiver_email, message.as_string())
+            print("Correo electrónico enviado exitosamente")
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     
-    inicio_sesion = VentanaInicioSesion()
+    inicio_sesion = Backend()
     inicio_sesion.show()
     
     sys.exit(app.exec())
