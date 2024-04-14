@@ -458,12 +458,12 @@
     <property name="title">
      <string>Opciones</string>
     </property>
-    <addaction name="action_Add_Patient"/>
+    <addaction name="action_PatientsConf"/>
    </widget>
    <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="action_Add_Patient">
+  <action name="action_PatientsConf">
    <property name="text">
     <string>Gestión Pacientes</string>
    </property>
