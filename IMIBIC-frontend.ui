@@ -93,31 +93,227 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
-        <widget class="QPushButton" name="Button1">
-         <property name="text">
-          <string>Visualización 1</string>
+        <widget class="QToolBox" name="toolBox">
+         <property name="currentIndex">
+          <number>0</number>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="Button2">
-         <property name="text">
-          <string>Visualización 2</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="Button3">
-         <property name="text">
-          <string>Visualización 3</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="Button4">
-         <property name="text">
-          <string>Visualización 4</string>
-         </property>
+         <widget class="QWidget" name="page">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>320</width>
+            <height>182</height>
+           </rect>
+          </property>
+          <attribute name="label">
+           <string>Page 1</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <widget class="QFrame" name="frame_5">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QFrame" name="frame_6">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <widget class="QPushButton" name="Button1">
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>13</y>
+                <width>98</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Visualizacion 1</string>
+              </property>
+             </widget>
+             <widget class="QPushButton" name="Button2">
+              <property name="geometry">
+               <rect>
+                <x>154</x>
+                <y>13</y>
+                <width>98</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Visualizacion 2</string>
+              </property>
+             </widget>
+             <widget class="QPushButton" name="Button3">
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>44</y>
+                <width>98</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Visualizacion 2</string>
+              </property>
+             </widget>
+             <widget class="QPushButton" name="Button4">
+              <property name="geometry">
+               <rect>
+                <x>154</x>
+                <y>44</y>
+                <width>98</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Visualizacion 4</string>
+              </property>
+             </widget>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="page_2">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>320</width>
+            <height>182</height>
+           </rect>
+          </property>
+          <attribute name="label">
+           <string>Page 2</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <item>
+            <widget class="QFrame" name="frame_7">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QFrame" name="frame_8">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_4">
+              <item row="0" column="0">
+               <widget class="QPushButton" name="Button1_3">
+                <property name="text">
+                 <string>Visualizacion 1</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QPushButton" name="Button2_3">
+                <property name="text">
+                 <string>Visualizacion 2</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QPushButton" name="Button3_3">
+                <property name="text">
+                 <string>Visualizacion 2</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QPushButton" name="Button4_3">
+                <property name="text">
+                 <string>Visualizacion 4</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="page_3">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>320</width>
+            <height>182</height>
+           </rect>
+          </property>
+          <attribute name="label">
+           <string>Página</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <item>
+            <widget class="QFrame" name="frame_9">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QFrame" name="frame_10">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QGridLayout" name="gridLayout">
+              <item row="0" column="0">
+               <widget class="QPushButton" name="Button1_4">
+                <property name="text">
+                 <string>Visualizacion 1</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QPushButton" name="Button2_4">
+                <property name="text">
+                 <string>Visualizacion 2</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QPushButton" name="Button3_4">
+                <property name="text">
+                 <string>Visualizacion 2</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QPushButton" name="Button4_4">
+                <property name="text">
+                 <string>Visualizacion 4</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </widget>
        </item>
       </layout>
@@ -131,7 +327,7 @@
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1">
        <property name="spacing">
         <number>0</number>
        </property>
@@ -155,6 +351,18 @@
          <property name="frameShadow">
           <enum>QFrame::Raised</enum>
          </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QTableView" name="tableView">
+            <attribute name="horizontalHeaderVisible">
+             <bool>false</bool>
+            </attribute>
+            <attribute name="verticalHeaderVisible">
+             <bool>false</bool>
+            </attribute>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
@@ -189,6 +397,15 @@
             <property name="frameShadow">
              <enum>QFrame::Raised</enum>
             </property>
+            <layout class="QVBoxLayout" name="verticalLayout_8">
+             <item>
+              <widget class="QLabel" name="estado">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
           <item>
@@ -208,7 +425,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_2">
+              <widget class="QPushButton" name="correo">
                <property name="text">
                 <string>Contactar por correo</string>
                </property>
@@ -241,12 +458,12 @@
     <property name="title">
      <string>Opciones</string>
     </property>
-    <addaction name="action_Add_Patient"/>
+    <addaction name="action_PatientsConf"/>
    </widget>
    <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="action_Add_Patient">
+  <action name="action_PatientsConf">
    <property name="text">
     <string>Gestión Pacientes</string>
    </property>

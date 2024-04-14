@@ -1,38 +1,19 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QInputDialog, QMessageBox, QSizePolicy
+from PyQt6.QtWidgets import QApplication, QMainWindow, QInputDialog, QMessageBox, QSizePolicy, QLabel, QTableView
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtCore import Qt
 from PyQt6.uic import loadUi
-from PyQt6.QtGui import QColor, QPalette
+from PyQt6.QtGui import QColor, QPalette, QStandardItemModel, QStandardItem
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
+from dbConnection import select_PacientByDId, new_Patient, get_PacientsDNI, get_Patients, modify_Patient, delete_Patient
+#Import correo
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.text import MIMEText
 
-
-class Backend(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        loadUi("IMIBIC-frontend.ui", self)
-        
-        self.action_Add_Patient.triggered.connect(self.patients_Conf)
-        self.read_DB()
-        self.setFixedSize(self.size())
-        
-        self.graphicsView = QWebEngineView()
-        self.gridLayout_6.addWidget(self.graphicsView, 0, 0, 1, 1)
-        self.comboBox.currentIndexChanged.connect(self.update_graph_data1)
-        self.comboBox.currentIndexChanged.connect(self.update_text_browser)
-        
-
-        self.plotly_figure = make_subplots(rows=1, cols=1)
-        self.update_graph_data1()
-
-        self.apply_Palette()
-        
-        self.Button1.clicked.connect(self.update_graph_data1)
-        self.Button2.clicked.connect(self.update_graph_data2)
-        self.Button3.clicked.connect(self.update_graph_data3)
-        self.Button4.clicked.connect(self.update_graph_data4)
-
-    def apply_Palette(self):
+def apply_Palette():
         palette = QPalette()
         # Colores para la ventana principal
         palette.setColor(QPalette.ColorRole.Window, QColor(53, 53, 53))
@@ -55,31 +36,56 @@ class Backend(QMainWindow):
         palette.setColor(QPalette.ColorRole.Highlight, QColor(142, 45, 197).lighter())
         palette.setColor(QPalette.ColorRole.HighlightedText, QColor(0, 0, 0))
         # Establecer la palette de colores personalizada
+        return palette
+
+
+class Backend(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.patients = get_Patients()
+
+        loadUi("IMIBIC-frontend.ui", self)
+        self.setFixedSize(self.size())
+        palette = apply_Palette()
         self.setPalette(palette)
 
-    def read_DB(self):
-        try:
-            with open("db.txt", 'r') as file:
-                self.patients = [line.strip().split(', ') for line in file.readlines()]
-                self.comboBox.clear()
-                for patient in self.patients:
-                    self.comboBox.addItem(patient[0])
-            
-        except FileNotFoundError:
-            print("There are no patients in the database. Please add some with the 'Add Patient' option.")
+        self.action_PatientsConf.triggered.connect(self.patients_Conf)
+        self.show_DNI_List()
+        
+        self.graphicsView = QWebEngineView()
+        self.gridLayout_6.addWidget(self.graphicsView, 0, 0, 1, 1)
+        self.comboBox.currentIndexChanged.connect(self.show_Graph1)
+        self.comboBox.currentIndexChanged.connect(self.show_User_Info)
+        
+        self.plotly_figure = make_subplots(rows=1, cols=1)
+        self.show_Graph1()
+
+        self.Button1.clicked.connect(self.show_Graph1)
+        self.Button2.clicked.connect(self.show_Graph2)
+        self.Button3.clicked.connect(self.show_Graph3)
+        self.Button4.clicked.connect(self.show_Graph4)
+        self.correo.clicked.connect(self.send_email)
+
+    def show_DNI_List(self):
+
+        dniList = get_PacientsDNI()
+        self.comboBox.clear()
+        
+        for dni in dniList:
+            self.comboBox.addItem(dni)
 
     
-    def update_text_browser(self):
+    def show_User_Info(self):
         selected_patient_index = self.comboBox.currentIndex()
         if selected_patient_index != -1:
             patient_data = self.patients[selected_patient_index]
             self.textBrowser.clear()
-            self.textBrowser.append(f"<b>Nombre:</b> {patient_data[1]}")
-            self.textBrowser.append(f"<b>Apellidos:</b> {patient_data[2]}")
-            self.textBrowser.append(f"<b>Edad:</b> {patient_data[3]}")
-            self.textBrowser.append(f"<b>Nivel de peligro:</b> {patient_data[4]}")
+            self.textBrowser.append(f"<b>Nombre:</b> {patient_data['nombre']}")
+            self.textBrowser.append(f"<b>Apellidos:</b> {patient_data['apellidos']}")
+            self.textBrowser.append(f"<b>Edad:</b> {patient_data['edad']}")
+            self.textBrowser.append(f"<b>Nivel de peligro:</b> {patient_data['nivel_de_peligro']}")
 
-    def update_graph_data1(self):
+    def show_Graph1(self):
         selected_patient_index = self.comboBox.currentIndex()
         if selected_patient_index != -1:
             patient_data = self.patients[selected_patient_index][-8:]
@@ -92,8 +98,10 @@ class Backend(QMainWindow):
             size_policy.setHorizontalStretch(1)
             size_policy.setVerticalStretch(1)
             self.graphicsView.setSizePolicy(size_policy)
+            self.add_data_to_model()
+            self.update_warning()
 
-    def update_graph_data2(self):
+    def show_Graph2(self):
         selected_patient_index = self.comboBox.currentIndex()
         if selected_patient_index != -1:
             patient_data = self.patients[selected_patient_index][-8:]
@@ -106,8 +114,10 @@ class Backend(QMainWindow):
             size_policy.setHorizontalStretch(1)
             size_policy.setVerticalStretch(1)
             self.graphicsView.setSizePolicy(size_policy)
+            self.add_data_to_model()
+            self.update_warning()
 
-    def update_graph_data3(self):
+    def show_Graph3(self):
         selected_patient_index = self.comboBox.currentIndex()
         if selected_patient_index != -1:
             patient_data = self.patients[selected_patient_index][-8:]
@@ -120,8 +130,10 @@ class Backend(QMainWindow):
             size_policy.setHorizontalStretch(1)
             size_policy.setVerticalStretch(1)
             self.graphicsView.setSizePolicy(size_policy)
+            self.add_data_to_model()
+            self.update_warning()
 
-    def update_graph_data4(self):
+    def show_Graph4(self):
         selected_patient_index = self.comboBox.currentIndex()
         if selected_patient_index != -1:
             patient_data = self.patients[selected_patient_index][-8:]
@@ -134,21 +146,27 @@ class Backend(QMainWindow):
             size_policy.setHorizontalStretch(1)
             size_policy.setVerticalStretch(1)
             self.graphicsView.setSizePolicy(size_policy)
+            self.add_data_to_model()
+            self.update_warning()
 
     def patients_Conf(self):
         options = ["Añadir", "Eliminar", "Modificar"]
         option, ok = QInputDialog.getItem(self, "Gestionar Paciente", "Seleccione una opción:", options, 0, False)
         if ok:
             if option == "Añadir":
-                self.add_Patient()
+                self.new_Patient_UI()
             elif option == "Eliminar":
-                self.clean_Patient()
+                self.remove_Patient_UI()
             elif option == "Modificar":
-                self.modify_Patient()
+                self.modify_Patient_UI()
     
-    def add_Patient(self):
+    def new_Patient_UI(self):
         dni, ok = QInputDialog.getText(self, "Añadir Paciente", "Introduce el DNI del nuevo paciente:")
         if ok:
+            if select_PacientByDId(dni):
+                QMessageBox.warning(self, "Error", "Ya existe un paciente con el DNI proporcionado.")
+                return
+
             name, ok = QInputDialog.getText(self, "Añadir Paciente", "Introduce el nombre del nuevo paciente:")
             if ok:
                 surname, ok = QInputDialog.getText(self, "Añadir Paciente", "Introduce los apellidos del nuevo paciente:")
@@ -157,49 +175,115 @@ class Backend(QMainWindow):
                     if ok:
                         danger, ok = QInputDialog.getText(self, "Añadir Paciente", "Introduce el nivel de peligro del nuevo paciente:")
                         if ok:
-                            patient = f"\n{dni}, {name}, {surname}, {age}, {danger}"
-                            with open("db.txt", 'a') as file:
-                                file.write(patient)
+                            new_Patient(dni, name, surname, age, danger)
                             self.comboBox.addItem(dni)
+                            self.patients = get_Patients()
                             QMessageBox.information(self, "Éxito", "Paciente añadido correctamente.")
 
-    def clean_Patient(self):
+    def remove_Patient_UI(self):
         dni, ok = QInputDialog.getText(self, "Eliminar Paciente", "Introduce el DNI del paciente a eliminar:")
         if ok:
-            with open("db.txt", 'r') as file:
-                patients = file.readlines()
-            with open("db.txt", 'w') as file:
-                for patient in patients:
-                    if not patient.startswith(dni):
-                        file.write(patient)
-            self.read_DB()
-            QMessageBox.information(self, "Éxito", "Paciente eliminado correctamente.")
+            if not select_PacientByDId(dni):
+                QMessageBox.warning(self, "Error", "El paciente con el DNI proporcionado no existe.")
+                return
 
-    def modify_Patient(self):
+            if delete_Patient(dni):
+                QMessageBox.information(self, "Éxito", "Paciente eliminado correctamente.")
+                self.comboBox.removeItem(self.comboBox.findText(dni))
+                self.patients = get_Patients()
+                self.comboBox.currentIndexChanged.disconnect()  
+                self.comboBox.currentIndexChanged.connect(self.show_User_Info)
+            else:
+                QMessageBox.warning(self, "Error", "Error al eliminar paciente.")
+
+    def modify_Patient_UI(self):
         dni, ok = QInputDialog.getText(self, "Modificar Paciente", "Introduce el DNI del paciente a modificar:")
         if ok:
-            with open("db.txt", 'r') as file:
-                patients = file.readlines()
-            with open("db.txt", 'w') as file:
-                for patient in patients:
-                    if patient.startswith(dni):
-                        name, ok = QInputDialog.getText(self, "Modificar Paciente", "Introduce el nuevo nombre del paciente:")
-                        if ok:
-                            surname, ok = QInputDialog.getText(self, "Modificar Paciente", "Introduce los nuevos apellidos del paciente:")
-                            if ok:
-                                age, ok = QInputDialog.getInt(self, "Modificar Paciente", "Introduce la nueva edad del paciente:")
-                                if ok:
-                                    danger, ok = QInputDialog.getText(self, "Modificar Paciente", "Introduce el nuevo nivel de peligro del paciente:")
-                                    if ok:
-                                        nuevo_paciente = f"{dni}, {name}, {surname}, {age}, {danger}\n"
-                                        file.write(nuevo_paciente)
-                    else:
-                        file.write(patient)
-            self.cargar_patients()
-            QMessageBox.information(self, "Éxito", "Paciente modificado correctamente.")
+            if not select_PacientByDId(dni):
+                QMessageBox.warning(self, "Error", "El paciente con el DNI proporcionado no existe.")
+                return
 
+            name, ok = QInputDialog.getText(self, "Modificar Paciente", "Introduce el nuevo nombre del paciente:")
+            if ok:
+                surname, ok = QInputDialog.getText(self, "Modificar Paciente", "Introduce los nuevos apellidos del paciente:")
+                if ok:
+                    age, ok = QInputDialog.getInt(self, "Modificar Paciente", "Introduce la nueva edad del paciente:")
+                    if ok:
+                        danger, ok = QInputDialog.getText(self, "Modificar Paciente", "Introduce el nuevo nivel de peligro del paciente:")
+                        if ok:
+                            if modify_Patient(dni, name, surname, age, danger):
+                                QMessageBox.information(self, "Éxito", "Paciente modificado correctamente.")
+                                self.patients = get_Patients()
+                                self.comboBox.currentIndexChanged.disconnect()  
+                                self.comboBox.currentIndexChanged.connect(self.show_User_Info) 
+                            else:
+                                QMessageBox.warning(self, "Error", "Error al modificar paciente.")
+
+    def update_warning(self):
+        # Carga la imagen desde un archivo
+        selected_patient_index = self.comboBox.currentIndex()
+        if selected_patient_index != -1:
+            patient_data = self.patients[selected_patient_index][-8:]
+
+            for value in patient_data:
+                if float(value) > 4:
+                    # Carga la imagen desde un archivo
+                    pixmap = QPixmap("data/aviso.png")
+                    
+                    # Ajusta la imagen al QLabel
+                    scaled_pixmap = pixmap.scaled(self.estado.size(), aspectRatioMode=Qt.AspectRatioMode.KeepAspectRatio)
+                    self.estado.setPixmap(scaled_pixmap)
+                    self.estado.setScaledContents(True)
+                    break
+                else :
+                    pixmap = QPixmap("data/estable.png")
+                    
+                    # Ajusta la imagen al QLabel
+                    scaled_pixmap = pixmap.scaled(self.estado.size(), aspectRatioMode=Qt.AspectRatioMode.KeepAspectRatio)
+                    self.estado.setPixmap(scaled_pixmap)
+                    self.estado.setScaledContents(True)
+        
+    def add_data_to_model(self):
+         # Crear el modelo de datos
+        self.model = QStandardItemModel()
+
+        # Obtener el índice del paciente seleccionado en el comboBox
+        selected_patient_index = self.comboBox.currentIndex()
+
+        # Obtener los datos del paciente seleccionado
+        patient_data = self.patients[selected_patient_index]
+
+        # Agregar los datos del paciente al modelo
+        row_items = [QStandardItem(str(item)) for item in patient_data]
+        self.model.appendRow(row_items)
+
+        # Establecer el modelo en el QTableView
+        self.tableView.setModel(self.model)
     
 
+    def send_email(self):
+        # Configurar los parámetros del servidor SMTP
+        smtp_server = 'smtp.gmail.com'
+        port = 587
+        sender_email = 'heartkathon@gmail.com'
+        password = 'ikgb jrvp nquf xlzm'
+
+        # Configurar el mensaje
+        receiver_email = 'heartkathon@gmail.com'
+        subject = 'Contacto medico'
+        body = 'Aviso para contactar con el Medico'
+
+        message = MIMEText(body)
+        message['Subject'] = subject
+        message['From'] = sender_email
+        message['To'] = receiver_email
+
+        # Establecer la conexión SMTP y enviar el correo electrónico
+        with smtplib.SMTP(smtp_server, port) as server:
+            server.starttls()
+            server.login(sender_email, password)
+            server.sendmail(sender_email, receiver_email, message.as_string())
+            print("Correo electrónico enviado exitosamente")
 
 
 if __name__ == "__main__":
