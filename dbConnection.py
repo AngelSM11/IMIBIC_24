@@ -114,12 +114,12 @@ def new_Patient(dni, name, surname, age, danger):
         data = (dni, name, surname, age, danger)
         sql = "INSERT INTO Pacientes (dni, nombre, apellidos, edad, nivel_riesgo) VALUES (%s, %s, %s, %s, %s)"
         
-        cursor.execute(sql, (data,))
+        cursor.execute(sql, data)
         conexion.commit()
         userData = (dni, "user", "user")
         sql = "INSERT INTO Usuarios (dni, passKey, userType) VALUES (%s, %s, %s)"
         
-        cursor.execute(sql, (userData,))
+        cursor.execute(sql, userData)
         conexion.commit()
 
     except Error as e:

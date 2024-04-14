@@ -191,8 +191,7 @@ class Backend(QMainWindow):
                 QMessageBox.information(self, "Éxito", "Paciente eliminado correctamente.")
                 self.comboBox.removeItem(self.comboBox.findText(dni))
                 self.patients = get_Patients()
-                self.comboBox.currentIndexChanged.disconnect()  
-                self.comboBox.currentIndexChanged.connect(self.show_User_Info)
+                self.show_User_Info()
             else:
                 QMessageBox.warning(self, "Error", "Error al eliminar paciente.")
 
@@ -212,10 +211,10 @@ class Backend(QMainWindow):
                         danger, ok = QInputDialog.getText(self, "Modificar Paciente", "Introduce el nuevo nivel de peligro del paciente:")
                         if ok:
                             if modify_Patient(dni, name, surname, age, danger):
-                                QMessageBox.information(self, "Éxito", "Paciente modificado correctamente.")
                                 self.patients = get_Patients()
                                 self.comboBox.currentIndexChanged.disconnect()  
-                                self.comboBox.currentIndexChanged.connect(self.show_User_Info) 
+                                self.show_User_Info()
+                                QMessageBox.information(self, "Éxito", "Paciente modificado correctamente.") 
                             else:
                                 QMessageBox.warning(self, "Error", "Error al modificar paciente.")
 
