@@ -22,6 +22,7 @@ class Backend(QMainWindow):
 
         self.setFixedSize(self.size())
 
+        self.apply_Palette_black()
         self.palette.setVisible(False)
 
         self.palette.clicked.connect(self.apply_Palette_black)
