@@ -45,11 +45,11 @@ class Backend(QMainWindow):
 
 
         #Crear un icono con la imagen que desees
-        pixmap =QPixmap("data/icon_email.PNG")
-        pixmap2 =QPixmap("data/icon_telf.PNG")
+        pixmap =QPixmap("data/icon_email.png")
+        pixmap2 =QPixmap("data/icon_telf.png")
         # Escalar el pixmap al tamaño del botón
-        pixmap = pixmap.scaled(320, 100)
-        pixmap2 = pixmap2.scaled(320, 100)
+        pixmap = pixmap.scaled(330, 130)
+        pixmap2 = pixmap2.scaled(330, 130)
 
         icon=QIcon(pixmap)
         icon2=QIcon(pixmap2)
