@@ -1,6 +1,6 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QInputDialog, QMessageBox, QSizePolicy, QLabel, QTableView
-from PyQt6.QtGui import QPixmap
+from PyQt6.QtWidgets import QApplication, QMainWindow, QInputDialog, QMessageBox, QSizePolicy
+from PyQt6.QtGui import QPixmap,  QIcon
 from PyQt6.QtCore import Qt
 from PyQt6.uic import loadUi
 from PyQt6.QtGui import QColor, QPalette, QStandardItemModel, QStandardItem
@@ -13,7 +13,56 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.text import MIMEText
 
-def apply_Palette():
+class Backend(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.patients = get_Patients()
+
+        loadUi("IMIBIC-frontend.ui", self)
+
+        self.setFixedSize(self.size())
+
+        self.palette.setVisible(False)
+
+        self.palette.clicked.connect(self.apply_Palette_black)
+        self.palette2.clicked.connect(self.apply_Palette_white)
+        
+        self.action_PatientsConf.triggered.connect(self.patients_Conf)
+        self.show_DNI_List()
+        
+        self.graphicsView = QWebEngineView()
+        self.gridLayout_6.addWidget(self.graphicsView, 0, 0, 1, 1)
+        self.comboBox.currentIndexChanged.connect(self.show_Graph1)
+        self.comboBox.currentIndexChanged.connect(self.show_User_Info)
+        
+        self.plotly_figure = make_subplots(rows=1, cols=1)
+        self.show_Graph1()
+
+        self.Button1.clicked.connect(self.show_Graph1)
+        self.Button2.clicked.connect(self.show_Graph2)
+        self.Button3.clicked.connect(self.show_Graph3)
+        self.Button4.clicked.connect(self.show_Graph4)
+
+
+        #Crear un icono con la imagen que desees
+        pixmap =QPixmap("data/icon_email.PNG")
+        pixmap2 =QPixmap("data/icon_telf.PNG")
+        # Escalar el pixmap al tamaño del botón
+        pixmap = pixmap.scaled(320, 100)
+        pixmap2 = pixmap2.scaled(320, 100)
+
+        icon=QIcon(pixmap)
+        icon2=QIcon(pixmap2)
+
+        #Asignar el icono al botón
+        self.correo.setIcon(icon)
+        self.email.setIcon(icon2)
+
+        self.correo.clicked.connect(self.send_email)
+
+    def apply_Palette_black(self):
+        self.palette.setVisible(False)
+        self.palette2.setVisible(True)
         palette = QPalette()
         # Colores para la ventana principal
         palette.setColor(QPalette.ColorRole.Window, QColor(53, 53, 53))
@@ -36,35 +85,34 @@ def apply_Palette():
         palette.setColor(QPalette.ColorRole.Highlight, QColor(142, 45, 197).lighter())
         palette.setColor(QPalette.ColorRole.HighlightedText, QColor(0, 0, 0))
         # Establecer la palette de colores personalizada
-        return palette
-
-
-class Backend(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.patients = get_Patients()
-
-        loadUi("IMIBIC-frontend.ui", self)
-        self.setFixedSize(self.size())
-        palette = apply_Palette()
         self.setPalette(palette)
 
-        self.action_PatientsConf.triggered.connect(self.patients_Conf)
-        self.show_DNI_List()
-        
-        self.graphicsView = QWebEngineView()
-        self.gridLayout_6.addWidget(self.graphicsView, 0, 0, 1, 1)
-        self.comboBox.currentIndexChanged.connect(self.show_Graph1)
-        self.comboBox.currentIndexChanged.connect(self.show_User_Info)
-        
-        self.plotly_figure = make_subplots(rows=1, cols=1)
-        self.show_Graph1()
-
-        self.Button1.clicked.connect(self.show_Graph1)
-        self.Button2.clicked.connect(self.show_Graph2)
-        self.Button3.clicked.connect(self.show_Graph3)
-        self.Button4.clicked.connect(self.show_Graph4)
-        self.correo.clicked.connect(self.send_email)
+    def apply_Palette_white(self):
+        self.palette.setVisible(True)
+        self.palette2.setVisible(False)  
+        palette = QPalette()
+        # Colores para la ventana principal
+        palette.setColor(QPalette.ColorRole.Window, QColor(240, 240, 240))
+        palette.setColor(QPalette.ColorRole.WindowText, QColor(0, 0, 0))
+        # Colores para la barra de herramientas (toolbar)
+        palette.setColor(QPalette.ColorRole.Light, QColor(255, 200, 200))  # Color de fondo de la toolbar
+        palette.setColor(QPalette.ColorRole.Mid, QColor(240, 240, 240))    # Color de fondo de los botones de la toolbar
+        palette.setColor(QPalette.ColorRole.Text, QColor(0, 0, 0))  # Color del texto de la toolbar
+        # Colores para la barra de estado (status bar)
+        palette.setColor(QPalette.ColorRole.Base, QColor(240, 240, 240))    # Color de fondo de la barra de estado
+        palette.setColor(QPalette.ColorRole.Text, QColor(0, 0, 0))  # Color del texto de la barra de estado
+        # Otros colores
+        palette.setColor(QPalette.ColorRole.Base, QColor(255, 255, 255))
+        palette.setColor(QPalette.ColorRole.AlternateBase, QColor(240, 240, 240))
+        palette.setColor(QPalette.ColorRole.ToolTipBase, QColor(255, 255, 220))
+        palette.setColor(QPalette.ColorRole.ToolTipText, QColor(0, 0, 0))
+        palette.setColor(QPalette.ColorRole.Button, QColor(240, 240, 240))
+        palette.setColor(QPalette.ColorRole.ButtonText, QColor(0, 0, 0))
+        palette.setColor(QPalette.ColorRole.BrightText, QColor(255, 0, 0))
+        palette.setColor(QPalette.ColorRole.Highlight, QColor(142, 45, 197).lighter())
+        palette.setColor(QPalette.ColorRole.HighlightedText, QColor(255, 255, 255))
+        # Establecer la palette de colores personalizada
+        self.setPalette(palette)
 
     def show_DNI_List(self):
 
