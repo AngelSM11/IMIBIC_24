@@ -245,7 +245,7 @@
             <property name="frameShadow">
              <enum>QFrame::Raised</enum>
             </property>
-            <layout class="QVBoxLayout" name="verticalLayout_4" stretch="1,1">
+            <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,0">
              <property name="spacing">
               <number>0</number>
              </property>
@@ -259,7 +259,7 @@
               <number>0</number>
              </property>
              <item>
-              <widget class="QPushButton" name="email">
+              <widget class="QPushButton" name="correo">
                <property name="minimumSize">
                 <size>
                  <width>330</width>
@@ -278,7 +278,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="correo">
+              <widget class="QPushButton" name="email">
                <property name="minimumSize">
                 <size>
                  <width>330</width>
@@ -328,7 +328,7 @@
             <x>0</x>
             <y>0</y>
             <width>320</width>
-            <height>214</height>
+            <height>210</height>
            </rect>
           </property>
           <attribute name="label">

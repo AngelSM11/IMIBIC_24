@@ -1,7 +1,7 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QInputDialog, QMessageBox, QSizePolicy
-from PyQt6.QtGui import QPixmap,  QIcon
-from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPixmap,  QIcon, QDesktopServices
+from PyQt6.QtCore import Qt, QUrl
 from PyQt6.uic import loadUi
 from PyQt6.QtGui import QColor, QPalette, QStandardItemModel, QStandardItem
 from PyQt6.QtWebEngineWidgets import QWebEngineView
@@ -46,7 +46,7 @@ class Backend(QMainWindow):
 
         #Crear un icono con la imagen que desees
         pixmap =QPixmap("data/icon_email.png")
-        pixmap2 =QPixmap("data/icon_telf.png")
+        pixmap2 =QPixmap("data/logo_nombre.png")
         # Escalar el pixmap al tamaño del botón
         pixmap = pixmap.scaled(330, 130)
         pixmap2 = pixmap2.scaled(330, 130)
@@ -59,6 +59,7 @@ class Backend(QMainWindow):
         self.email.setIcon(icon2)
 
         self.correo.clicked.connect(self.send_email)
+        self.email.clicked.connect(self.openWebsite)
 
     def apply_Palette_black(self):
         self.palette.setVisible(False)
@@ -309,28 +310,49 @@ class Backend(QMainWindow):
     
 
     def send_email(self):
-        # Configurar los parámetros del servidor SMTP
-        smtp_server = 'smtp.gmail.com'
-        port = 587
-        sender_email = 'heartkathon@gmail.com'
-        password = 'ikgb jrvp nquf xlzm'
+        # Mostrar un cuadro de diálogo de advertencia
+        reply = QMessageBox.question(None, 'Enviar correo', '¿Estás seguro de que quieres enviar el correo?', QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
 
-        # Configurar el mensaje
-        receiver_email = 'heartkathon@gmail.com'
-        subject = 'Contacto medico'
-        body = 'Aviso para contactar con el Medico'
+        # Si se hace clic en "Sí", abrir el sitio web
+        if reply == QMessageBox.StandardButton.Yes:
+        
+            # Configurar los parámetros del servidor SMTP
+            smtp_server = 'smtp.gmail.com'
+            port = 587
+            sender_email = 'heartkathon@gmail.com'
+            password = 'ikgb jrvp nquf xlzm'
 
-        message = MIMEText(body)
-        message['Subject'] = subject
-        message['From'] = sender_email
-        message['To'] = receiver_email
+            # Configurar el mensaje
+            receiver_email = 'heartkathon@gmail.com'
+            subject = 'AVISO DEL MÉDICO'
+            body = 'Aviso de de contacto de su medico'
 
-        # Establecer la conexión SMTP y enviar el correo electrónico
-        with smtplib.SMTP(smtp_server, port) as server:
-            server.starttls()
-            server.login(sender_email, password)
-            server.sendmail(sender_email, receiver_email, message.as_string())
-            print("Correo electrónico enviado exitosamente")
+            message = MIMEText(body)
+            message['Subject'] = subject
+            message['From'] = sender_email
+            message['To'] = receiver_email
+
+            # Establecer la conexión SMTP y enviar el correo electrónico
+            with smtplib.SMTP(smtp_server, port) as server:
+                server.starttls()
+                server.login(sender_email, password)
+                server.sendmail(sender_email, receiver_email, message.as_string())
+                #print("Correo electrónico enviado exitosamente")
+
+            QMessageBox.information(None, ' ', 'Correo enviado correctamente', QMessageBox.StandardButton.Ok)
+
+    
+    def openWebsite(self):
+        # Mostrar un cuadro de diálogo de advertencia
+        reply = QMessageBox.question(None, 'Abrir Sitio Web', '¿Estás seguro de que quieres abrir el sitio web?', QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+
+        # Si se hace clic en "Sí", abrir el sitio web
+        if reply == QMessageBox.StandardButton.Yes:
+            # URL del sitio web al que quieres dirigir
+            url = QUrl('https://heartkathon.sencia.es/')
+
+            # Abrir la URL en un navegador web externo
+            QDesktopServices.openUrl(url)
 
 
 if __name__ == "__main__":
