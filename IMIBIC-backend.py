@@ -133,7 +133,7 @@ class Backend(QMainWindow):
             self.textBrowser.append(f"<b>Nombre:</b> {patient_data['nombre']}")
             self.textBrowser.append(f"<b>Apellidos:</b> {patient_data['apellidos']}")
             self.textBrowser.append(f"<b>Edad:</b> {patient_data['edad']}")
-            self.textBrowser.append(f"<b>Nivel de peligro:</b> {patient_data['nivel_de_peligro']}")
+            self.textBrowser.append(f"<b>Nivel de peligro:</b> {patient_data['nivel_riesgo']}")
 
     def show_Graph1(self):
         selected_patient_index = self.comboBox.currentIndex()
