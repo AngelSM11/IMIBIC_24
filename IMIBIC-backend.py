@@ -7,11 +7,14 @@ from PyQt6.QtGui import QColor, QPalette, QStandardItemModel, QStandardItem
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
-from dbConnection import select_PacientByDId, new_Patient, get_PacientsDNI, get_Patients, modify_Patient, delete_Patient
+from dbConnection import select_PacientByDId, new_Patient, get_PacientsDNI, get_Patients, modify_Patient, delete_Patient, get_Patient_Meds
 #Import correo
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.text import MIMEText
+
+from dbConnection import ref
+from firebase_admin import db
 
 class Backend(QMainWindow):
     def __init__(self):
@@ -40,9 +43,9 @@ class Backend(QMainWindow):
         self.show_Graph1()
 
         self.Button1.clicked.connect(self.show_Graph1)
-        self.Button2.clicked.connect(self.show_Graph2)
-        self.Button3.clicked.connect(self.show_Graph3)
-        self.Button4.clicked.connect(self.show_Graph4)
+         #self.Button2.clicked.connect(self.show_Graph2)
+         #self.Button3.clicked.connect(self.show_Graph3)
+         #self.Button4.clicked.connect(self.show_Graph4)
 
 
         #Crear un icono con la imagen que desees
@@ -135,13 +138,38 @@ class Backend(QMainWindow):
             self.textBrowser.append(f"<b>Edad:</b> {patient_data['edad']}")
             self.textBrowser.append(f"<b>Nivel de peligro:</b> {patient_data['nivel_riesgo']}")
 
+    def stream_handler(self, dni, event):
+
+        new_meds = get_Patient_Meds(dni)
+
+        print(new_meds)
+
+        #x_values = [i for i in range(1, len(intensidades) + 1)]
+
+        # # Actualizar los datos del gráfico existente
+        #self.plotly_figure.data[0].x = x_values
+        #self.plotly_figure.data[0].y = intensidades
+        #self.plotly_figure.data[1].x = x_values
+        #self.plotly_figure.data[1].y = voltajes
+#
+        #html = self.plotly_figure.to_html(full_html=False, include_plotlyjs='cdn')
+
+        #self.graphicsView.setHtml("")
+
+        #self.graphicsView.setHtml(html)
+        #self.add_data_to_model()
+
     def show_Graph1(self):
         selected_patient_index = self.comboBox.currentIndex()
         if selected_patient_index != -1:
-            patient_data = self.patients[selected_patient_index][-8:]
-            x_values = [i for i in range(1, 9)]
+            dni = self.patients[selected_patient_index]["dni"] 
+            intensidades, voltajes = get_Patient_Meds(dni)  
+
+            x_values = [i for i in range(1, len(intensidades) + 1)]
             self.plotly_figure = go.Figure()
-            self.plotly_figure.add_trace(go.Scatter(x=x_values, y=patient_data, mode='lines+markers', name='Impedancy Graph'))
+            self.plotly_figure.add_trace(go.Scatter(x=x_values, y=intensidades, mode='lines+markers', name='Intensidad'))
+            self.plotly_figure.add_trace(go.Scatter(x=x_values, y=voltajes, mode='lines+markers', name='Voltaje'))
+
             html = self.plotly_figure.to_html(full_html=False, include_plotlyjs='cdn')
             self.graphicsView.setHtml(html)
             size_policy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -149,56 +177,10 @@ class Backend(QMainWindow):
             size_policy.setVerticalStretch(1)
             self.graphicsView.setSizePolicy(size_policy)
             self.add_data_to_model()
-            self.update_warning()
+            
+            stream = ref.listen(lambda event: self.stream_handler(dni, event))
 
-    def show_Graph2(self):
-        selected_patient_index = self.comboBox.currentIndex()
-        if selected_patient_index != -1:
-            patient_data = self.patients[selected_patient_index][-8:]
-            x_values = [i for i in range(1, 9)]
-            self.plotly_figure = go.Figure()
-            self.plotly_figure.add_trace(go.Scatter(x=x_values, y=patient_data, mode='markers', name='Scatter Plot'))
-            html = self.plotly_figure.to_html(full_html=False, include_plotlyjs='cdn')
-            self.graphicsView.setHtml(html)
-            size_policy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-            size_policy.setHorizontalStretch(1)
-            size_policy.setVerticalStretch(1)
-            self.graphicsView.setSizePolicy(size_policy)
-            self.add_data_to_model()
-            self.update_warning()
-
-    def show_Graph3(self):
-        selected_patient_index = self.comboBox.currentIndex()
-        if selected_patient_index != -1:
-            patient_data = self.patients[selected_patient_index][-8:]
-            x_values = [i for i in range(1, 9)]
-            self.plotly_figure = go.Figure()
-            self.plotly_figure.add_trace(go.Box(y=patient_data, name='Box Plot'))
-            html = self.plotly_figure.to_html(full_html=False, include_plotlyjs='cdn')
-            self.graphicsView.setHtml(html)
-            size_policy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-            size_policy.setHorizontalStretch(1)
-            size_policy.setVerticalStretch(1)
-            self.graphicsView.setSizePolicy(size_policy)
-            self.add_data_to_model()
-            self.update_warning()
-
-    def show_Graph4(self):
-        selected_patient_index = self.comboBox.currentIndex()
-        if selected_patient_index != -1:
-            patient_data = self.patients[selected_patient_index][-8:]
-            x_values = [i for i in range(1, 9)]
-            self.plotly_figure = go.Figure()
-            self.plotly_figure.add_trace(go.Bar(x=x_values, y=patient_data, name='Bar Graph'))
-            html = self.plotly_figure.to_html(full_html=False, include_plotlyjs='cdn')
-            self.graphicsView.setHtml(html)
-            size_policy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-            size_policy.setHorizontalStretch(1)
-            size_policy.setVerticalStretch(1)
-            self.graphicsView.setSizePolicy(size_policy)
-            self.add_data_to_model()
-            self.update_warning()
-
+    
     def patients_Conf(self):
         options = ["Añadir", "Eliminar", "Modificar"]
         option, ok = QInputDialog.getItem(self, "Gestionar Paciente", "Seleccione una opción:", options, 0, False)

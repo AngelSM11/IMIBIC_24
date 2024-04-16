@@ -92,3 +92,12 @@ def delete_Patient(dni):
     except Exception as e:
         print("Error al eliminar el paciente:", e)
         return False
+    
+def get_Patient_Meds(dni):
+    mediciones = ref.child("mediciones").child(dni).get()
+    intensidades = []
+    voltajes = []
+    for med_id, data in mediciones.items():
+        intensidades.append(data["intensidad"])
+        voltajes.append(data["voltaje"])
+    return intensidades, voltajes
